@@ -2,239 +2,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Register</title>
+    <title>Hacker Calculator</title>
     <style>
         body {
-            background-color: #272930;
-            color: #c2c6dc;
-            font-family: Arial, sans-serif;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #0f0f0f;
+            color: #33ff33;
+            margin: 0;
         }
 
-        .container {
-            width: 400px;
-            margin: 50px auto;
+        .calculator {
+            background-color: #1a1a1a;
             padding: 20px;
-            background-color: #313645;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0px 0px 15px rgba(0, 255, 0, 0.7);
         }
 
-        h2 {
-            text-align: center;
-        }
-
-        label {
-            display: block;
-            margin-top: 10px;
-            margin-bottom: 5px;
-        }
-
-        input {
+        .display {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #313645;
-            border: 1px solid #454b5e;
-            color: #c2c6dc;
+            padding: 15px;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: right;
+            border: 1px solid #33ff33;
             border-radius: 5px;
+            background-color: #000;
+            color: #33ff33;
         }
 
-        input[type="checkbox"] {
-            width: auto;
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
         }
 
-        button {
-            background-color: #3c3e4f;
-            color: white;
-            padding: 10px 20px;
+        .buttons button {
+            padding: 20px;
+            font-size: 18px;
+            cursor: pointer;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
+            background-color: #0f0f0f;
+            color: #33ff33;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
         }
 
-        button:hover {
-            background-color: #4e5366;
+        .buttons button:hover {
+            background-color: #33ff33;
+            color: #000;
         }
 
-        .credits {
-            text-align: center;
-            font-size: 0.8em;
-            margin-top: 20px;
+        .equal {
+            background-color: #33ff33;
+            color: #000;
+            grid-column: 4 / 5;
+            grid-row: span 2;
         }
 
-        .hidden {
-            display: none;
+        .equal:hover {
+            background-color: #29cc29;
         }
 
+        .clear {
+            background-color: #ff3333;
+            color: #000;
+            grid-column: span 2;
+        }
+
+        .clear:hover {
+            background-color: #ff6666;
+        }
+
+        .zero {
+            grid-column: span 2;
+        }
     </style>
 </head>
 <body>
-
-<!-- Login Container -->
-<div class="container" id="login-container">
-    <h2>Login</h2>
-    <label for="login-username">Username</label>
-    <input type="text" id="login-username" placeholder="Enter your username">
-
-    <label for="login-password">Password</label>
-    <input type="password" id="login-password" placeholder="Enter your password">
-
-    <label>
-        <input type="checkbox" id="remember-me"> Remember Me
-    </label>
-
-    <button onclick="login()">Login</button>
-    <button onclick="showRegister()">Register</button>
-    <button onclick="showAdminPanel()">Admin Panel</button>
-
-    <div class="credits">
-        Owner: Jacob Sins (Developer) <br>
-        Special Thanks: Roberto Denaro
+    <div class="calculator">
+        <input type="text" id="result" class="display" disabled>
+        <div class="buttons">
+            <button onclick="clearDisplay()" class="clear">C</button>
+            <button onclick="appendToDisplay('/')">/</button>
+            <button onclick="appendToDisplay('*')">*</button>
+            <button onclick="appendToDisplay('-')">-</button>
+            
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button onclick="appendToDisplay('+')">+</button>
+            
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            
+            <button onclick="appendToDisplay('0')" class="zero">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
+            <button onclick="calculate()" class="equal">=</button>
+        </div>
     </div>
-</div>
 
-<!-- Register Container -->
-<div class="container hidden" id="register-container">
-    <h2>Register</h2>
-
-    <label for="reg-username">Username</label>
-    <input type="text" id="reg-username" placeholder="Enter your username">
-
-    <label for="reg-password">Password</label>
-    <input type="password" id="reg-password" placeholder="Enter your password">
-
-    <label for="reg-repeat-password">Repeat Password</label>
-    <input type="password" id="reg-repeat-password" placeholder="Repeat your password">
-
-    <label for="reg-email">Email</label>
-    <input type="email" id="reg-email" placeholder="Enter your email">
-
-    <button onclick="register()">Register</button>
-    <button onclick="showLogin()">Cancel</button>
-</div>
-
-<!-- Post-login Container -->
-<div class="container hidden" id="inject-container">
-    <h2>Welcome!</h2>
-
-    <!-- License Key Input -->
-    <label for="license-key">License Key</label>
-    <input type="text" id="license-key" placeholder="Enter your license key">
-
-    <button onclick="validateLicenseKey()">Validate License Key</button>
-
-    <div id="inject-section" class="hidden">
-        <h2>Inject Section</h2>
-        <button onclick="inject()">Inject</button>
-    </div>
-</div>
-
-<!-- Admin Panel Container -->
-<div class="container hidden" id="admin-container">
-    <h2>Admin Panel</h2>
-    <p>Welcome to the Admin Panel! Only authorized users can access this section.</p>
-    <button onclick="showLogin()">Logout</button>
-</div>
-
-<script>
-    // Simulated in-memory storage for credentials
-    let userCredentials = {};
-    const validLicenseKey = "ABC123XYZ";  // Predefined valid license key
-    const adminCredentials = {
-        "admin": "adminpassword"  // Admin username and password
-    };
-
-    function showRegister() {
-        document.getElementById('login-container').classList.add('hidden');
-        document.getElementById('register-container').classList.remove('hidden');
-    }
-
-    function showLogin() {
-        document.getElementById('register-container').classList.add('hidden');
-        document.getElementById('login-container').classList.remove('hidden');
-        document.getElementById('admin-container').classList.add('hidden');
-    }
-
-    function isValidEmail(email) {
-        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return pattern.test(email);
-    }
-
-    function register() {
-        const username = document.getElementById('reg-username').value;
-        const password = document.getElementById('reg-password').value;
-        const repeatPassword = document.getElementById('reg-repeat-password').value;
-        const email = document.getElementById('reg-email').value;
-
-        if (password !== repeatPassword) {
-            alert("Passwords do not match!");
-            return;
+    <script>
+        function appendToDisplay(value) {
+            document.getElementById('result').value += value;
         }
 
-        if (!isValidEmail(email)) {
-            alert("Invalid email format!");
-            return;
+        function clearDisplay() {
+            document.getElementById('result').value = '';
         }
 
-        // Save the credentials
-        userCredentials[username] = password;
-        alert("Registration Successful!");
-
-        // Clear inputs
-        document.getElementById('reg-username').value = '';
-        document.getElementById('reg-password').value = '';
-        document.getElementById('reg-repeat-password').value = '';
-        document.getElementById('reg-email').value = '';
-
-        // Show login form
-        showLogin();
-    }
-
-    function login() {
-        const username = document.getElementById('login-username').value;
-        const password = document.getElementById('login-password').value;
-
-        if (userCredentials[username] && userCredentials[username] === password) {
-            alert("Login Successful!");
-            showInjectPage();
-        } else {
-            alert("Incorrect Username or Password!");
+        function calculate() {
+            let expression = document.getElementById('result').value;
+            if (expression === '1+1') {
+                document.getElementById('result').value = 'I love you';
+            } else {
+                try {
+                    document.getElementById('result').value = eval(expression);
+                } catch {
+                    document.getElementById('result').value = 'Error';
+                }
+            }
         }
-    }
-
-    function showInjectPage() {
-        document.getElementById('login-container').classList.add('hidden');
-        document.getElementById('inject-container').classList.remove('hidden');
-    }
-
-    function showAdminPanel() {
-        const username = document.getElementById('login-username').value;
-        const password = document.getElementById('login-password').value;
-
-        if (adminCredentials[username] && adminCredentials[username] === password) {
-            document.getElementById('login-container').classList.add('hidden');
-            document.getElementById('admin-container').classList.remove('hidden');
-        } else {
-            alert("Access Denied! Admin credentials are required.");
-        }
-    }
-
-    function validateLicenseKey() {
-        const enteredKey = document.getElementById('license-key').value;
-
-        if (enteredKey === validLicenseKey) {
-            alert("License Key Validated Successfully!");
-            document.getElementById('inject-section').classList.remove('hidden');
-        } else {
-            alert("Invalid License Key!");
-        }
-    }
-
-    function inject() {
-        alert("Inject button clicked!");
-    }
-</script>
-
+    </script>
 </body>
 </html>
