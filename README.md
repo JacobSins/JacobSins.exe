@@ -10,13 +10,25 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #0f0f0f;
-            color: #33ff33;
             margin: 0;
+            overflow: hidden;
+            color: #33ff33;
+            position: relative;
+        }
+
+        /* Video background */
+        .background-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
         }
 
         .calculator {
-            background-color: #1a1a1a;
+            background-color: rgba(26, 26, 26, 0.9); /* Slight transparency to show the background video */
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 0px 15px rgba(0, 255, 0, 0.7);
@@ -83,6 +95,10 @@
     </style>
 </head>
 <body>
+    <video autoplay muted loop class="background-video">
+        <source src="https://images-ext-1.discordapp.net/external/VSIz_HBWvb5se_31XixHYYVdtn8RuOlA6v2kOzFqcBo/https/media.tenor.com/Zp9f2I9FpFcAAAPo/anonimous-hacker.mp4"> <!-- Replace with your MP4 URL -->
+        Your browser does not support the video tag.
+    </video>
     <div class="calculator">
         <input type="text" id="result" class="display" disabled>
         <div class="buttons">
