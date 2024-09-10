@@ -60,7 +60,7 @@
             background-color: #33ff33;
             color: #000;
             grid-column: 4 / 5;
-            grid-row: span 2;
+            grid-row: 4 / 6;
         }
 
         .equal:hover {
@@ -122,7 +122,7 @@
         function calculate() {
             let expression = document.getElementById('result').value;
             if (expression === '1+1') {
-                document.getElementById('result').value = 'I love you';
+                document.getElementById('result').value = 'I love you💖';
             } else {
                 try {
                     document.getElementById('result').value = eval(expression);
