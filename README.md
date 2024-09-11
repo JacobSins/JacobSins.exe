@@ -149,7 +149,7 @@
     <footer>
         <div class="author-credits">
             <span>Author: Jacob Sins</span>
-            <span>Lagay ko daw name nya: Roberto Denaro</span>
+            <span>Contributor: Roberto Denaro</span>
         </div>
     </footer>
 
