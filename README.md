@@ -97,8 +97,20 @@
         footer {
             position: absolute;
             bottom: 10px;
-            font-size: 14px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .author-credits {
+            font-size: 24px;
+            font-weight: bold;
             color: #33ff33;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+        }
+
+        .author-credits span {
+            display: block;
+            margin: 10px 0;
         }
     </style>
 </head>
@@ -135,8 +147,10 @@
     </div>
 
     <footer>
-        Author: Jacob Sins
-        Lagay ko daw name nya: Roberto Denaro
+        <div class="author-credits">
+            <span>Author: Jacob Sins</span>
+            <span>Lagay ko daw name nya: Roberto Denaro</span>
+        </div>
     </footer>
 
     <script>
