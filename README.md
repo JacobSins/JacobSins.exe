@@ -138,7 +138,7 @@
         function calculate() {
             let expression = document.getElementById('result').value;
             if (expression === '1+1') {
-                document.getElementById('result').value = 'JACOB';
+                document.getElementById('result').value = '2';
             } else {
                 try {
                     document.getElementById('result').value = eval(expression);
