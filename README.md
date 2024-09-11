@@ -14,6 +14,7 @@
             overflow: hidden;
             color: #33ff33;
             position: relative;
+            flex-direction: column;
         }
 
         /* Video background */
@@ -92,6 +93,13 @@
         .zero {
             grid-column: span 2;
         }
+
+        footer {
+            position: absolute;
+            bottom: 10px;
+            font-size: 14px;
+            color: #33ff33;
+        }
     </style>
 </head>
 <body>
@@ -125,6 +133,10 @@
             <button onclick="calculate()" class="equal">=</button>
         </div>
     </div>
+
+    <footer>
+        Author: Jacob Sins
+    </footer>
 
     <script>
         function appendToDisplay(value) {
