@@ -1,152 +1,329 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hacker Calculator</title>
-    <style>
-        body {
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            color: #33ff33;
-            position: relative;
-        }
+import tkinter as tk
+from tkinter import messagebox
+import re
 
-        /* Video background */
-        .background-video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
-        }
+def main():
+    try:
+        # Create main application window
+        root = tk.Tk()
+        root.title("Login & Register")
+        root.geometry("389x317")
+        root.configure(bg="#272930")
 
-        .calculator {
-            background-color: rgba(26, 26, 26, 0.9); /* Slight transparency to show the background video */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 15px rgba(0, 255, 0, 0.7);
-        }
+        # Remove title bar, including minimize and maximize buttons
+        root.overrideredirect(True)
+        root.resizable(False, False)
 
-        .display {
-            width: 100%;
-            padding: 15px;
-            font-size: 24px;
-            margin-bottom: 20px;
-            text-align: right;
-            border: 1px solid #33ff33;
-            border-radius: 5px;
-            background-color: #000;
-            color: #33ff33;
-        }
+        # Color scheme
+        bg_color = "#272930"
+        entry_bg = "#313645"
+        entry_fg = "#c2c6dc"
+        text_color = "#c2c6dc"
+        button_color = "#3c3e4f"
+        button_active_color = "#4e5366"
+        button_fg_color = "white"
+        toolbar_color = "#1f2430"
+        check_fg_color = "#c2c6dc"
 
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
+        # Function to handle window dragging
+        def on_drag(event):
+            x = root.winfo_pointerx() - x_offset
+            y = root.winfo_pointery() - y_offset
+            root.geometry(f"+{x}+{y}")
 
-        .buttons button {
-            padding: 20px;
-            font-size: 18px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            background-color: #0f0f0f;
-            color: #33ff33;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-        }
+        def on_press(event):
+            global x_offset, y_offset
+            x_offset = root.winfo_pointerx() - root.winfo_rootx()
+            y_offset = root.winfo_pointery() - root.winfo_rooty()
 
-        .buttons button:hover {
-            background-color: #33ff33;
-            color: #000;
-        }
+        root.bind("<Button-1>", on_press)
+        root.bind("<B1-Motion>", on_drag)
 
-        .equal {
-            background-color: #33ff33;
-            color: #000;
-            grid-column: 4 / 5;
-            grid-row: 4 / 6;
-        }
+        # Function to close the window
+        def close_window():
+            root.destroy()
 
-        .equal:hover {
-            background-color: #29cc29;
-        }
+        # Create a small custom toolbar with just a close button
+        toolbar = tk.Frame(root, bg=toolbar_color, height=20, relief='flat', bd=0)
+        toolbar.pack(fill='x', side='top')
 
-        .clear {
-            background-color: #ff3333;
-            color: #000;
-            grid-column: span 2;
-        }
+        # Close button on the toolbar
+        close_button = tk.Button(toolbar, text="X", command=close_window, bg=toolbar_color, fg=button_fg_color, activebackground=button_active_color, relief='flat', padx=5, pady=2)
+        close_button.pack(side='right')
 
-        .clear:hover {
-            background-color: #ff6666;
-        }
+        # Function to switch to the register window
+        def show_register():
+            login_frame.pack_forget()
+            register_frame.pack()
 
-        .zero {
-            grid-column: span 2;
-        }
-    </style>
-</head>
-<body>
-    <video autoplay muted loop class="background-video">
-        <source src="https://images-ext-1.discordapp.net/external/VSIz_HBWvb5se_31XixHYYVdtn8RuOlA6v2kOzFqcBo/https/media.tenor.com/Zp9f2I9FpFcAAAPo/anonimous-hacker.mp4"> <!-- Replace with your MP4 URL -->
-        Your browser does not support the video tag.
-    </video>
-    <div class="calculator">
-        <input type="text" id="result" class="display" disabled>
-        <div class="buttons">
-            <button onclick="clearDisplay()" class="clear">C</button>
-            <button onclick="appendToDisplay('/')">/</button>
-            <button onclick="appendToDisplay('*')">*</button>
-            <button onclick="appendToDisplay('-')">-</button>
-            
-            <button onclick="appendToDisplay('7')">7</button>
-            <button onclick="appendToDisplay('8')">8</button>
-            <button onclick="appendToDisplay('9')">9</button>
-            <button onclick="appendToDisplay('+')">+</button>
-            
-            <button onclick="appendToDisplay('4')">4</button>
-            <button onclick="appendToDisplay('5')">5</button>
-            <button onclick="appendToDisplay('6')">6</button>
-            
-            <button onclick="appendToDisplay('1')">1</button>
-            <button onclick="appendToDisplay('2')">2</button>
-            <button onclick="appendToDisplay('3')">3</button>
-            
-            <button onclick="appendToDisplay('0')" class="zero">0</button>
-            <button onclick="appendToDisplay('.')">.</button>
-            <button onclick="calculate()" class="equal">=</button>
-        </div>
-    </div>
+        # Function to switch back to the login window
+        def show_login():
+            register_frame.pack_forget()
+            login_frame.pack()
 
-    <script>
-        function appendToDisplay(value) {
-            document.getElementById('result').value += value;
-        }
+        # Function to validate email format using regex
+        def is_valid_email(email):
+            pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+            return re.match(pattern, email)
 
-        function clearDisplay() {
-            document.getElementById('result').value = '';
-        }
+        # Function for register action
+        def register():
+            username = reg_username_entry.get()
+            password = reg_password_entry.get()
+            repeat_password = reg_repeat_password_entry.get()
+            email = reg_email_entry.get()
 
-        function calculate() {
-            let expression = document.getElementById('result').value;
-            if (expression === '1+1') {
-                document.getElementById('result').value = '2';
-            } else {
-                try {
-                    document.getElementById('result').value = eval(expression);
-                } catch {
-                    document.getElementById('result').value = 'Error';
-                }
-            }
-        }
-    </script>
-</body>
-</html>
+            if password != repeat_password:
+                messagebox.showerror("Register", "Passwords do not match")
+                return
+
+            if not is_valid_email(email):
+                messagebox.showerror("Register", "Invalid email format")
+                return
+
+            messagebox.showinfo("Register", "Registration Successful!")
+            show_login()
+
+        # Function for login action
+        def login():
+            username = login_username_entry.get()
+            password = login_password_entry.get()
+            if username == "jacobsins11" and password == "password123":
+                messagebox.showinfo("Login", "Login Successful!")
+            else:
+                messagebox.showerror("Login", "Incorrect Username or Password")
+
+        # ----------- Login Frame ------------
+        login_frame = tk.Frame(root, bg=bg_color, padx=20, pady=20)
+
+        # Username Entry
+        login_username_entry = tk.Entry(login_frame, bg=entry_bg, fg=entry_fg, insertbackground=entry_fg, relief='flat', width=30, highlightthickness=1, highlightbackground="#454b5e")
+        login_username_entry.pack(pady=5, ipady=5)
+
+        # Password Entry
+        login_password_entry = tk.Entry(login_frame, show="*", bg=entry_bg, fg=entry_fg, insertbackground=entry_fg, relief='flat', width=30, highlightthickness=1, highlightbackground="#454b5e")
+        login_password_entry.pack(pady=5, ipady=5)
+
+        # Remember Me Checkbox
+        remember_var = tk.IntVar()
+        remember_check = tk.Checkbutton(login_frame, text="Remember Me", variable=remember_var, bg=bg_color, fg=check_fg_color, activebackground=bg_color, selectcolor=entry_bg, anchor='w')
+        remember_check.pack(pady=5)
+
+        # Buttons for Login and Register
+        button_frame = tk.Frame(login_frame, bg=bg_color)
+        button_frame.pack(pady=10)
+
+        login_button = tk.Button(button_frame, text="Login", command=login, bg=button_color, fg=button_fg_color, activebackground=button_active_color, relief='flat', padx=20, pady=5)
+        login_button.grid(row=0, column=0, padx=5)
+
+        register_button = tk.Button(button_frame, text="Register", command=show_register, bg=button_color, fg=button_fg_color, activebackground=button_active_color, relief='flat', padx=20, pady=5)
+        register_button.grid(row=0, column=1, padx=5)
+
+        login_frame.pack()
+
+        # ----------- Register Frame (Smaller) ------------
+        register_frame = tk.Frame(root, bg=bg_color, padx=10, pady=10)
+
+        inner_register_frame = tk.Frame(register_frame, bg=bg_color)  # Inner frame for smaller size
+        inner_register_frame.pack()
+
+        tk.Label(inner_register_frame, text="Username", bg=bg_color, fg=text_color).pack(pady=2)
+        reg_username_entry = tk.Entry(inner_register_frame, bg=entry_bg, fg=text_color, insertbackground=text_color, relief='flat', width=25, highlightthickness=1, highlightbackground="#454b5e")
+        reg_username_entry.pack(pady=2, ipady=3)
+
+        tk.Label(inner_register_frame, text="Password", bg=bg_color, fg=text_color).pack(pady=2)
+        reg_password_entry = tk.Entry(inner_register_frame, show="*", bg=entry_bg, fg=text_color, insertbackground=text_color, relief='flat', width=25, highlightthickness=1, highlightbackground="#454b5e")
+        reg_password_entry.pack(pady=2, ipady=3)
+
+        tk.Label(inner_register_frame, text="Repeat Password", bg=bg_color, fg=text_color).pack(pady=2)
+        reg_repeat_password_entry = tk.Entry(inner_register_frame, show="*", bg=entry_bg, fg=text_color, insertbackground=text_color, relief='flat', width=25, highlightthickness=1, highlightbackground="#454b5e")
+        reg_repeat_password_entry.pack(pady=2, ipady=3)
+
+        tk.Label(inner_register_frame, text="Email", bg=bg_color, fg=text_color).pack(pady=2)
+        reg_email_entry = tk.Entry(inner_register_frame, bg=entry_bg, fg=text_color, insertbackground=text_color, relief='flat', width=25, highlightthickness=1, highlightbackground="#454b5e")
+        reg_email_entry.pack(pady=2, ipady=3)
+
+        # Buttons for Register and Cancel
+        reg_button_frame = tk.Frame(inner_register_frame, bg=bg_color)
+        reg_button_frame.pack(pady=5)
+
+        register_btn = tk.Button(reg_button_frame, text="Register", command=register, bg=button_color, fg=button_fg_color, activebackground=button_active_color, relief='flat', padx=15, pady=3)
+        register_btn.grid(row=0, column=0, padx=5)
+
+        cancel_btn = tk.Button(reg_button_frame, text="Cancel", command=show_login, bg=button_color, fg=button_fg_color, activebackground=button_active_color, relief='flat', padx=15, pady=3)
+        cancel_btn.grid(row=0, column=1, padx=5)
+
+        # Initially show the login frame
+        login_frame.pack()
+
+        root.mainloop()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        messagebox.showerror("Error", str(e))
+
+if __name__ == "__main__":
+    main()import tkinter as tk
+from tkinter import messagebox
+import re
+
+def main():
+    try:
+        # Create main application window
+        root = tk.Tk()
+        root.title("Login & Register")
+        root.geometry("389x317")
+        root.configure(bg="#272930")
+
+        # Remove title bar, including minimize and maximize buttons
+        root.overrideredirect(True)
+        root.resizable(False, False)
+
+        # Color scheme
+        bg_color = "#272930"
+        entry_bg = "#313645"
+        entry_fg = "#c2c6dc"
+        text_color = "#c2c6dc"
+        button_color = "#3c3e4f"
+        button_active_color = "#4e5366"
+        button_fg_color = "white"
+        toolbar_color = "#1f2430"
+        check_fg_color = "#c2c6dc"
+
+        # Function to handle window dragging
+        def on_drag(event):
+            x = root.winfo_pointerx() - x_offset
+            y = root.winfo_pointery() - y_offset
+            root.geometry(f"+{x}+{y}")
+
+        def on_press(event):
+            global x_offset, y_offset
+            x_offset = root.winfo_pointerx() - root.winfo_rootx()
+            y_offset = root.winfo_pointery() - root.winfo_rooty()
+
+        root.bind("<Button-1>", on_press)
+        root.bind("<B1-Motion>", on_drag)
+
+        # Function to close the window
+        def close_window():
+            root.destroy()
+
+        # Create a small custom toolbar with just a close button
+        toolbar = tk.Frame(root, bg=toolbar_color, height=20, relief='flat', bd=0)
+        toolbar.pack(fill='x', side='top')
+
+        # Close button on the toolbar
+        close_button = tk.Button(toolbar, text="X", command=close_window, bg=toolbar_color, fg=button_fg_color, activebackground=button_active_color, relief='flat', padx=5, pady=2)
+        close_button.pack(side='right')
+
+        # Function to switch to the register window
+        def show_register():
+            login_frame.pack_forget()
+            register_frame.pack()
+
+        # Function to switch back to the login window
+        def show_login():
+            register_frame.pack_forget()
+            login_frame.pack()
+
+        # Function to validate email format using regex
+        def is_valid_email(email):
+            pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+            return re.match(pattern, email)
+
+        # Function for register action
+        def register():
+            username = reg_username_entry.get()
+            password = reg_password_entry.get()
+            repeat_password = reg_repeat_password_entry.get()
+            email = reg_email_entry.get()
+
+            if password != repeat_password:
+                messagebox.showerror("Register", "Passwords do not match")
+                return
+
+            if not is_valid_email(email):
+                messagebox.showerror("Register", "Invalid email format")
+                return
+
+            messagebox.showinfo("Register", "Registration Successful!")
+            show_login()
+
+        # Function for login action
+        def login():
+            username = login_username_entry.get()
+            password = login_password_entry.get()
+            if username == "jacobsins11" and password == "password123":
+                messagebox.showinfo("Login", "Login Successful!")
+            else:
+                messagebox.showerror("Login", "Incorrect Username or Password")
+
+        # ----------- Login Frame ------------
+        login_frame = tk.Frame(root, bg=bg_color, padx=20, pady=20)
+
+        # Username Entry
+        login_username_entry = tk.Entry(login_frame, bg=entry_bg, fg=entry_fg, insertbackground=entry_fg, relief='flat', width=30, highlightthickness=1, highlightbackground="#454b5e")
+        login_username_entry.pack(pady=5, ipady=5)
+
+        # Password Entry
+        login_password_entry = tk.Entry(login_frame, show="*", bg=entry_bg, fg=entry_fg, insertbackground=entry_fg, relief='flat', width=30, highlightthickness=1, highlightbackground="#454b5e")
+        login_password_entry.pack(pady=5, ipady=5)
+
+        # Remember Me Checkbox
+        remember_var = tk.IntVar()
+        remember_check = tk.Checkbutton(login_frame, text="Remember Me", variable=remember_var, bg=bg_color, fg=check_fg_color, activebackground=bg_color, selectcolor=entry_bg, anchor='w')
+        remember_check.pack(pady=5)
+
+        # Buttons for Login and Register
+        button_frame = tk.Frame(login_frame, bg=bg_color)
+        button_frame.pack(pady=10)
+
+        login_button = tk.Button(button_frame, text="Login", command=login, bg=button_color, fg=button_fg_color, activebackground=button_active_color, relief='flat', padx=20, pady=5)
+        login_button.grid(row=0, column=0, padx=5)
+
+        register_button = tk.Button(button_frame, text="Register", command=show_register, bg=button_color, fg=button_fg_color, activebackground=button_active_color, relief='flat', padx=20, pady=5)
+        register_button.grid(row=0, column=1, padx=5)
+
+        login_frame.pack()
+
+        # ----------- Register Frame (Smaller) ------------
+        register_frame = tk.Frame(root, bg=bg_color, padx=10, pady=10)
+
+        inner_register_frame = tk.Frame(register_frame, bg=bg_color)  # Inner frame for smaller size
+        inner_register_frame.pack()
+
+        tk.Label(inner_register_frame, text="Username", bg=bg_color, fg=text_color).pack(pady=2)
+        reg_username_entry = tk.Entry(inner_register_frame, bg=entry_bg, fg=text_color, insertbackground=text_color, relief='flat', width=25, highlightthickness=1, highlightbackground="#454b5e")
+        reg_username_entry.pack(pady=2, ipady=3)
+
+        tk.Label(inner_register_frame, text="Password", bg=bg_color, fg=text_color).pack(pady=2)
+        reg_password_entry = tk.Entry(inner_register_frame, show="*", bg=entry_bg, fg=text_color, insertbackground=text_color, relief='flat', width=25, highlightthickness=1, highlightbackground="#454b5e")
+        reg_password_entry.pack(pady=2, ipady=3)
+
+        tk.Label(inner_register_frame, text="Repeat Password", bg=bg_color, fg=text_color).pack(pady=2)
+        reg_repeat_password_entry = tk.Entry(inner_register_frame, show="*", bg=entry_bg, fg=text_color, insertbackground=text_color, relief='flat', width=25, highlightthickness=1, highlightbackground="#454b5e")
+        reg_repeat_password_entry.pack(pady=2, ipady=3)
+
+        tk.Label(inner_register_frame, text="Email", bg=bg_color, fg=text_color).pack(pady=2)
+        reg_email_entry = tk.Entry(inner_register_frame, bg=entry_bg, fg=text_color, insertbackground=text_color, relief='flat', width=25, highlightthickness=1, highlightbackground="#454b5e")
+        reg_email_entry.pack(pady=2, ipady=3)
+
+        # Buttons for Register and Cancel
+        reg_button_frame = tk.Frame(inner_register_frame, bg=bg_color)
+        reg_button_frame.pack(pady=5)
+
+        register_btn = tk.Button(reg_button_frame, text="Register", command=register, bg=button_color, fg=button_fg_color, activebackground=button_active_color, relief='flat', padx=15, pady=3)
+        register_btn.grid(row=0, column=0, padx=5)
+
+        cancel_btn = tk.Button(reg_button_frame, text="Cancel", command=show_login, bg=button_color, fg=button_fg_color, activebackground=button_active_color, relief='flat', padx=15, pady=3)
+        cancel_btn.grid(row=0, column=1, padx=5)
+
+        # Initially show the login frame
+        login_frame.pack()
+
+        root.mainloop()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        messagebox.showerror("Error", str(e))
+
+if __name__ == "__main__":
+    main()
