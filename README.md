@@ -99,6 +99,9 @@
             bottom: 10px;
             text-align: center;
             width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .author-credits {
@@ -106,11 +109,14 @@
             font-weight: bold;
             color: #33ff33;
             text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .author-credits span {
             display: block;
-            margin: 10px 0;
+            margin: 5px 0;
         }
     </style>
 </head>
