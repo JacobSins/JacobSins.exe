@@ -176,7 +176,7 @@
                 try {
                     document.getElementById('result').value = eval(expression);
                 } catch {
-                    document.getElementById('result').value = 'Error';
+                    document.getElementById('result').value = 'TANGINA MO BOBO KABA??';
                 }
             }
         }
